@@ -22,6 +22,7 @@ without modification. Feel free to then use this project as a reference for your
 own Dockerfiles.
 
 ## The languages available are:
+- Arduino
 - C
 - Go
 - Java
@@ -113,7 +114,43 @@ rust container will not work. One of the two rust images must be removed.*
 <br>
 
 ## Language Environments
+### Arduino
 
+**This is a work in progress**
+- I am testing how to get a container to communicate to a Microcontroller.
+- Usually, this is done by adding a user account to the group `dialout`
+- I have not verified how to upload an Arduino sketch to a board from a container.
+
+A container for writing sketches for the Arduino microcontrollers and
+compatibles. This Dockerfile is currently written for me, which the Arduino
+board I like to use is the SparkFun Redboard.
+
+
+
+The tool `arduino-cli` is installed, which provides a command-line tool to
+download Arduino cores, compile sketches, and upload them to your board. The
+cores installed in this Dockerfile are AVR cores, used in Atmel
+microcontrollers. The most popular Arduino board that uses AVR cores is the Uno.
+
+This project assumes you are using a compatible board, which will need an
+additional URL to download the cores, and you'll need to update a variable for
+the additional cores that needs installed. If you are using the Uno itself,
+you can comment out every line that contains `$ADDITIONAL_CORE`.
+
+The configuration of `arduino-cli` compiles sketches to your project directory,
+rather than the container's `~/.cache` folder.
+
+There is no default USB port defined in the `~/arduino/sketch.yaml` file.
+Usually, the default is `/dev/ttyUSB0`, but no assumptions are being
+made.
+
+To make sure that you have the correct USB port selected to communicate to your
+Arduino, please consult the official documentation [here](https://docs.arduino.cc/arduino-cli/).
+
+
+<br>
+
+---
 ### C
 The standard compiler, gcc, is here for your introduction to the C language. The
 compiler is installed from the DNF package manager.
