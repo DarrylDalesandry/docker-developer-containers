@@ -116,16 +116,14 @@ rust container will not work. One of the two rust images must be removed.*
 ## Language Environments
 ### Arduino
 
-**This is a work in progress**
+**This container is a work in progress**
 - I am testing how to get a container to communicate to a Microcontroller.
-- Usually, this is done by adding a user account to the group `dialout`
+- On regular Linux systems, this is done by adding a user account to the group `dialout`
 - I have not verified how to upload an Arduino sketch to a board from a container.
 
 A container for writing sketches for the Arduino microcontrollers and
 compatibles. This Dockerfile is currently written for me, which the Arduino
 board I like to use is the SparkFun Redboard.
-
-
 
 The tool `arduino-cli` is installed, which provides a command-line tool to
 download Arduino cores, compile sketches, and upload them to your board. The
