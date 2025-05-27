@@ -29,8 +29,6 @@ LABEL identity="dd-all"
 
 # Install base system dependencies
 #  also installs minimum requirements for C and Python
-RUN echo 'fastestmirror=True' >> /etc/dnf/dnf.conf
-
 RUN dnf upgrade -y && dnf install -y \
   git \
   nano \

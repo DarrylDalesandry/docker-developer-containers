@@ -18,8 +18,6 @@ LABEL identity="dd-go"
 
 
 # Install base system dependencies
-RUN echo 'fastestmirror=True' >> /etc/dnf/dnf.conf
-
 RUN dnf upgrade -y && dnf install -y \
   git \
   nano \

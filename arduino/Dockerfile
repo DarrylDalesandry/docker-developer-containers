@@ -19,8 +19,6 @@ ENV ARDUINO_DOWNLOAD="https://raw.githubusercontent.com/arduino/arduino-cli/mast
 LABEL identity="dd-arduino"
 
 # Install base system dependencies
-RUN echo 'fastestmirror=True' >> /etc/dnf/dnf.conf
-
 RUN dnf upgrade -y && dnf install -y \
   git \
   nano \
