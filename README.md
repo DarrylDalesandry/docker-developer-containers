@@ -33,8 +33,8 @@ own Dockerfiles.
 
 ## Setup, Variable Initialization
 
-Within each folder for these languages is a Dockerfile. The first three variables
-are the same across each file:
+Within each folder for these languages is a Dockerfile. The first three
+variables are the same across each file:
 - GITHUB_EMAIL: The email address associated with your GitHub account.
 - GITHUB_USERNAME: The username for your GitHub account.
 - DOTFILE_REPO: The name of your dotfile repository (not the full URL).
@@ -56,11 +56,11 @@ RUN git config --global user.name $GITHUB_USERNAME
 The LABEL "identity" is used with the accompanying execution script to securely
 instantiate a Docker container. The label is used to uniquely identify a single
 container and attach to it. The container is volatile, once the container is
-exited by the user, the container will delete itself, all contents in it
-will be gone.
+exited by the user, the container will delete itself. All content in the
+container will be gone.
 
 The containers will also bind to the user's folder, `~/.ssh`. This is to
-securely allow the user's keys to be accessed by the container, to be used
+securely allow the user's ssh keys to be accessed by the container, to be used
 with GitHub. With the ssh keys not being transferred during the building of
 Docker images, there are no records of the keys in the image's history, and the
 container is deleted upon exit.
@@ -71,8 +71,8 @@ sections below.
 ## Standard User Permissions, Not Root
 
 One of the primary goals of these build files, is to make sure that when the
-user attaches to a container, that they are using a user account that does not
-have the ability to run commands as root, or super user. This means that `sudo`
+user attaches to a container, that they access a user account that does not have
+the ability to run commands as root, or super user. This means that `sudo`
 commands will not work in the container's tty.
 
 All material needed to have a basic developer environment is provided in the
@@ -80,7 +80,7 @@ container itself. So that the user does not need to edit any other files.
 
 ## How to Start a Container
 
-For instructions on how to install Docker, see [Install Docker Engine](https://docs.docker.com/engine/install/)
+For instructions on how to install Docker, see [Install Docker Engine](https://docs.docker.com/engine/install/).
 
 After Docker Engine is installed:
 ```bash
@@ -116,35 +116,42 @@ rust container will not work. One of the two rust images must be removed.*
 ## Language Environments
 ### Arduino
 
-**This container is a work in progress**
-- I am testing how to get a container to communicate to a Microcontroller.
-- On regular Linux systems, this is done by adding a user account to the group `dialout`
-- I have not verified how to upload an Arduino sketch to a board from a container.
+A container for writing sketches for Arduino microcontrollers and compatibles.
+This Dockerfile was originally written for me, which the Arduino board I like to
+use is the SparkFun RedBoard. The Dockerfile is created to run an Arduino
+compatible, and can be modified to use official Arduino boards if wanted.
 
-A container for writing sketches for the Arduino microcontrollers and
-compatibles. This Dockerfile is currently written for me, which the Arduino
-board I like to use is the SparkFun Redboard.
+If you are using the Uno itself, you can comment out every line that contains
+the variable: `$ADDITIONAL_CORE`, then set the `$ADDITIONAL_FQBN` variable to
+the value: `arduino:avr:uno`.
+
+The user account that is connected to will have access to the `dialout` group,
+which allows the account to upload sketches to a board. The default port for
+SparkFun RedBoards is `/dev/ttyUSB0`. If you use a different port, this will
+need updated on the last line of the Dockerfile, and the `start-arduino.sh`
+bash script.
+
+The Dockerfile will need three additional variables set before running:
+- ADDITIONAL_CORE: the core of a compatible board, ex: SparkFun:avr
+- ADDITIONAL_FQBN: the full name of the board, ex: SparkFun:avr:RedBoard
+- ADDITIONAL_URL: the web address needed for arduino-cli to import cores
+
+The SparkFun additional url is listed on their [webpage here](https://learn.sparkfun.com/tutorials/installing-arduino-ide/board-add-ons-with-arduino-board-manager).
 
 The tool `arduino-cli` is installed, which provides a command-line tool to
 download Arduino cores, compile sketches, and upload them to your board. The
 cores installed in this Dockerfile are AVR cores, used in Atmel
 microcontrollers. The most popular Arduino board that uses AVR cores is the Uno.
 
-This project assumes you are using a compatible board, which will need an
-additional URL to download the cores, and you'll need to update a variable for
-the additional cores that needs installed. If you are using the Uno itself,
-you can comment out every line that contains `$ADDITIONAL_CORE`.
-
 The configuration of `arduino-cli` compiles sketches to your project directory,
 rather than the container's `~/.cache` folder.
 
-There is no default USB port defined in the `~/arduino/sketch.yaml` file.
-Usually, the default is `/dev/ttyUSB0`, but no assumptions are being
-made.
-
 To make sure that you have the correct USB port selected to communicate to your
-Arduino, please consult the official documentation [here](https://docs.arduino.cc/arduino-cli/).
+Arduino, please consult the official [documentation here](https://docs.arduino.cc/arduino-cli/).
 
+The Arduino Language Server needs both `arduino-language-server` and `clangd`
+installed to work. A project file is also initialized, so you don't have set one
+up yourself in order to get the language server to work.
 
 <br>
 
@@ -171,7 +178,7 @@ The specific version of Java installed is an OpenJDK, Adoptium Temurin. This
 version of Java is installed by adding the Adoptium repository to DNF and
 installing through the package manager.
 
-For more information about Temurin, click [here](https://adoptium.net/docs/faq/)
+For more information about Temurin, [click here](https://adoptium.net/docs/faq/).
 
 The variable `OPENJDK_LTS` will need periodic updates as newer LTS versions
 of OpenJDK are released.
@@ -205,7 +212,7 @@ environment to be setup on Python projects.
 
 A virtual environment is not setup by default, using a virtual environment for
 Python is considered good practice. The commands to get a virtual environment
-setup is:
+setup are:
 
 ```bash
 python3 -m venv ./
@@ -243,10 +250,10 @@ file can then be opened to edit.
 ---
 ### TypeScript
 The TypeScript container can be used for both JavaScript and TypeScript. This
-configuration is also opinionated. The `Node Version Manager` (NVM) script is
+configuration is also opinionated. The [Node Version Manager](https://github.com/nvm-sh/nvm) (NVM) script is
 downloaded and run. This will install the latest LTS version of Node during
 the build process, as well as Node Package Manger (NPM). This build file will
-also download the PNPM package manager configuration and install it.
+also download the [PNPM package manager](https://pnpm.io/) configuration and install it.
 
 The TypeScript configuration has two initializations, one for PNPM initializing
 a project, and a second for TypeScript. TypeScript itself is not installed
@@ -264,9 +271,9 @@ pnpm tsx ./file.ts
 <br>
 
 ---
-### Everything
-As the name says, if you really want to, you can have all language environments
-added to a single container. Everything is here in one place.
+### Almost Everything
+As the name says, if you really want to, you can have almost all language
+environments added to a single container.
 
 This was made as a "final boss" kind of Dockerfile, to finish the project. It
 was never intended for someone to actually use all these languages in a single
@@ -275,3 +282,13 @@ container, but if that is something you want to use, have fun!
 When attaching to `everything`, each language will have its own separate folder
 from where the working directory starts. Rust will initiate a project in its
 own folder, as well as TypeScript.
+
+#### Update
+When I first made this project, it did not inlude Arduino. I don't see a reason
+to include Arduino to the **Everything** section, because there are a lot of
+different boards and core combinations that I think would make the **Everything**
+section a bit too convoluted.
+
+Programming languages can be setup with only a few variables, but to account for
+different families of hardware, I didn't want to make something to address all
+of the different combinations.

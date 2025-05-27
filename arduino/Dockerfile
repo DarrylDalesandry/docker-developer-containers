@@ -78,3 +78,4 @@ RUN /home/$USERNAME/.local/bin/arduino-cli core install arduino:avr
 RUN /home/$USERNAME/.local/bin/arduino-cli core install $ADDITIONAL_CORE
 RUN touch /home/$USERNAME/$LANGUAGE/sketch.yaml
 RUN echo "default_fqbn: $ADDITIONAL_FQBN" >> /home/$USERNAME/$LANGUAGE/sketch.yaml
+RUN echo "default_port: /dev/ttyUSB0" >> /home/$USERNAME/$LANGUAGE/sketch.yaml
