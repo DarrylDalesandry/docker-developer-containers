@@ -4,17 +4,18 @@ FROM fedora:latest
 ENV GITHUB_EMAIL=""
 ENV GITHUB_USERNAME=""
 ENV DOTFILE_REPO=""
+
 ENV NEOVIM_TAR_DOWNLOAD="https://github.com/neovim/neovim/releases/latest/download/nvim-linux-x86_64.tar.gz"
 ENV NEOVIM_FILE="nvim-linux-x86_64"
 
 # Versions of all languages not in DNF
-ENV GO_VERSION="1.24.3"
+ENV GO_VERSION="1.25.5"
 ENV GO_TAR_FILE="go$GO_VERSION.linux-amd64.tar.gz"
 
-ENV OPENJDK_LTS="21"
-ENV FEDORA_VERSION="42"
+ENV OPENJDK_LTS="25"
+ENV FEDORA_VERSION="43"
 
-ENV LUA_VERSION="5.4.7"
+ENV LUA_VERSION="5.4.8"
 
 ENV NVM_VERSION="v0.40.3"
 ENV NVM_DOWNLOAD="https://raw.githubusercontent.com/nvm-sh/nvm/$NVM_VERSION/install.sh"
@@ -60,6 +61,7 @@ RUN mkdir -m 0755 /home/$USERNAME/.ssh
 
 RUN mkdir -p /home/$USERNAME/.config/
 ADD https://github.com/$GITHUB_USERNAME/$DOTFILE_REPO.git /home/$USERNAME/.config/
+
 
 # Creating all runtime folders
 RUN mkdir /home/$USERNAME/$LANGUAGE && \

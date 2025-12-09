@@ -4,6 +4,7 @@ FROM fedora:latest
 ENV GITHUB_EMAIL=""
 ENV GITHUB_USERNAME=""
 ENV DOTFILE_REPO=""
+
 ENV NEOVIM_TAR_DOWNLOAD="https://github.com/neovim/neovim/releases/latest/download/nvim-linux-x86_64.tar.gz"
 ENV NEOVIM_FILE="nvim-linux-x86_64"
 

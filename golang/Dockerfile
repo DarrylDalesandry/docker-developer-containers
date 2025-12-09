@@ -4,11 +4,12 @@ FROM fedora:latest
 ENV GITHUB_EMAIL=""
 ENV GITHUB_USERNAME=""
 ENV DOTFILE_REPO=""
+
 ENV NEOVIM_TAR_DOWNLOAD="https://github.com/neovim/neovim/releases/latest/download/nvim-linux-x86_64.tar.gz"
 ENV NEOVIM_FILE="nvim-linux-x86_64"
 
 # Periodic updates for the latest version of Go
-ENV GO_VERSION="1.24.3"
+ENV GO_VERSION="1.25.5"
 ENV GO_TAR_FILE="go$GO_VERSION.linux-amd64.tar.gz"
 
 # Constants, do not change

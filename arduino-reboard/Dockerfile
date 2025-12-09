@@ -5,9 +5,9 @@ ENV GITHUB_EMAIL=""
 ENV GITHUB_USERNAME=""
 ENV DOTFILE_REPO=""
 
-ENV ADDITIONAL_CORE=""
-ENV ADDITIONAL_FQBN=""
-ENV ADDITIONAL_URL=""
+ENV ADDITIONAL_CORE="SparkFun:avr"
+ENV ADDITIONAL_FQBN="SparkFun:avr:RedBoard"
+ENV ADDITIONAL_URL="https://raw.githubusercontent.com/sparkfun/Arduino_Boards/main/IDE_Board_Manager/package_sparkfun_index.json"
 
 ENV NEOVIM_TAR_DOWNLOAD="https://github.com/neovim/neovim/releases/latest/download/nvim-linux-x86_64.tar.gz"
 ENV NEOVIM_FILE="nvim-linux-x86_64"
@@ -32,7 +32,6 @@ RUN dnf upgrade -y && dnf install -y \
 # Non-admin account & Neovim setup
 RUN useradd -m -d /home/$USERNAME $USERNAME
 RUN usermod -a -G dialout $USERNAME
-
 
 ADD $NEOVIM_TAR_DOWNLOAD /opt/
 RUN tar -xf /opt/$NEOVIM_FILE.tar.gz -C /opt/ && \

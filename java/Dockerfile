@@ -4,12 +4,13 @@ FROM fedora:latest
 ENV GITHUB_EMAIL=""
 ENV GITHUB_USERNAME=""
 ENV DOTFILE_REPO=""
+
 ENV NEOVIM_TAR_DOWNLOAD="https://github.com/neovim/neovim/releases/latest/download/nvim-linux-x86_64.tar.gz"
 ENV NEOVIM_FILE="nvim-linux-x86_64"
 
 # Periodic updates for the latest OpenJDK version and Fedora version
-ENV OPENJDK_LTS="21"
-ENV FEDORA_VERSION="42"
+ENV OPENJDK_LTS="25"
+ENV FEDORA_VERSION="43"
 
 # Constants, do not change
 ENV USERNAME="dd-container"

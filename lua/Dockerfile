@@ -4,11 +4,12 @@ FROM fedora:latest
 ENV GITHUB_EMAIL=""
 ENV GITHUB_USERNAME=""
 ENV DOTFILE_REPO=""
+
 ENV NEOVIM_TAR_DOWNLOAD="https://github.com/neovim/neovim/releases/latest/download/nvim-linux-x86_64.tar.gz"
 ENV NEOVIM_FILE="nvim-linux-x86_64"
 
 # Periodic updates for the latest version of Lua
-ENV LUA_VERSION="5.4.7"
+ENV LUA_VERSION="5.4.8"
 
 # Constants, do not change
 ENV USERNAME="dd-container"
@@ -39,7 +40,8 @@ RUN tar -xf /opt/$NEOVIM_FILE.tar.gz -C /opt/ && \
 # Environment setup
 ENV PATH="$PATH:/opt/$NEOVIM_FILE/bin"
 RUN mkdir -p /home/$USERNAME/$LANGUAGE && \
-    mkdir -m 0755 /home/$USERNAME/.ssh
+    mkdir -m 0755 /home/$USERNAME/.ssh && \
+    mkdir -p /home/$USERNAME/Education
 
 RUN mkdir -p /home/$USERNAME/.config/
 ADD https://github.com/$GITHUB_USERNAME/$DOTFILE_REPO.git /home/$USERNAME/.config/
