@@ -109,7 +109,7 @@ Then edit the three empty string variables with your information. Then, after
 writing and saving:
 ```bash
 cd ./c
-./c/start-c.sh
+./start-c.sh
 ```
 
 This will build the docker container for the C environment. After
@@ -119,6 +119,12 @@ Each language folder has its own `start` shell script that will build a
 container image, then create a temporary container and attach to it. If an
 image was already built previously, then the start shell script will create
 a temporary container and attach to it.
+
+The default behavior of the `start` shell script is that your current working
+directory is in the same folder as the `start` shell script. The variable at
+the start of each shell script, `BUILDPATH` can be changes to fit your
+environment. Such as, if you want your build scripts in a different folder
+than the Dockerfiles.
 
 <br>
 
