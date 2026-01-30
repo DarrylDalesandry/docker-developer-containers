@@ -4,7 +4,7 @@
 BUILDPATH="./"
 
 # Constants, do not change
-IDENTITY="dd-python"
+IDENTITY="dd-kotlin"
 USERNAME="dd-container"
 
 CONTAINER=$(docker images --filter "label=identity=$IDENTITY" -q)

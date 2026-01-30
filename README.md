@@ -1,11 +1,13 @@
 # Docker Developer Containers
 
 This project is intended to provide small containers that can be used to learn
- the basics of different programming languages.
+the basics of different programming languages.
 
 Websites have been decreasing the number of virtual systems that you can use
 to run a simple developer environment. This project can be used to run
 many different languages in small containers with minimal packages.
+
+This project uses Docker to run isolated container.
 
 This project contains Dockerfiles, and executable scripts, to get different
 containerized developer environments securely setup and securely running.
@@ -15,17 +17,18 @@ All developer environments are built on top of the Fedora Docker container.
 This is also an opinionated project. The expectation of the build files is that
 you are using Neovim as your editor, that you have your Neovim configuration
 saved as a dotfiles repository using GitHub. Also, the expectation is that you
-will use ssh to clone and push updates to your projects via GitHub.
+will use ssh to clone, pull, and push updates to your projects via GitHub.
 
 This project is built for me, which means it may not be suitable for your needs
 without modification. Feel free to then use this project as a reference for your
 own Dockerfiles.
 
 ## The languages available are:
-- Arduino
+- Arduino (for both the SparkFun Redboard and Arduino Uno)
 - C
 - Go
 - Java
+- Kotlin
 - Lua
 - Python
 - Rust
@@ -59,14 +62,24 @@ container and attach to it. The container is volatile, once the container is
 exited by the user, the container will delete itself. All content in the
 container will be gone.
 
-The containers will also bind to the user's folder, `~/.ssh`. This is to
-securely allow the user's ssh keys to be accessed by the container, to be used
-with GitHub. With the ssh keys not being transferred during the building of
-Docker images, there are no records of the keys in the image's history, and the
-container is deleted upon exit.
+The containers will also bind to the user's folder, `~/.ssh`, with read-only
+access. This is to securely allow the user's ssh keys to be accessed by the 
+container, to be used with GitHub. With the ssh keys not being transferred, or
+hard-coded, during the building of Docker images, there are no records of the
+keys in the image's history, and the container is deleted upon exit.
 
 Unique variables for periodic updates will be noted in the language
 sections below.
+
+The two Arduino boards, the SparkFun Redboard and the Arduino Uno, will need the
+physical device plugged in before attempting to instantiate and run a container.
+The `--device` flag is used to provid the container access to the board itself.
+The Uno makes a serial connection to `dev/ttyACM0`, while the Redboard will 
+connect through USB to `/dev/ttyUSB0`.
+
+If the Redboard and Uno are not plugged in when running their start scripts,
+then the container will fail to start. You can comment out the line starting
+with `--device` to not require it.
 
 ## Standard User Permissions, Not Root
 
@@ -86,7 +99,7 @@ After Docker Engine is installed:
 ```bash
 git clone https://github.com/DarrylDalesandry/docker-developer-containers.git
 
-cd docker-developer-containers
+cd ./docker-developer-containers
 ```
 Using C as the example, open a text editor to the C environment's Dockerfile:
 ```bash
@@ -95,45 +108,38 @@ nvim ./c/Dockerfile
 Then edit the three empty string variables with your information. Then, after
 writing and saving:
 ```bash
-docker build ./c
+cd ./c
+./c/start-c.sh
 ```
 
 This will build the docker container for the C environment. After
 the image is built, it can then be started with the command:
-```bash
-./c/start-c.sh
-```
 
-Each language folder has its own `start` shell script that will find and attach
-to a single container.
-
-*If a single developer environment has multiple images built, for example by
-running a build command on the `rust` folder twice, then the script to start a
-rust container will not work. One of the two rust images must be removed.*
+Each language folder has its own `start` shell script that will build a
+container image, then create a temporary container and attach to it. If an
+image was already built previously, then the start shell script will create
+a temporary container and attach to it.
 
 <br>
 
 ## Language Environments
-### Arduino
+### Arduino, Redboard and Uno
 
 A container for writing sketches for Arduino microcontrollers and compatibles.
-This Dockerfile was originally written for me, which the Arduino board I like to
-use is the SparkFun RedBoard. The Dockerfile is created to run an Arduino
-compatible, and can be modified to use official Arduino boards if wanted.
+I've included separate Dockerfiles and start scripts for the popular Uno, and
+the SparkFun Redboard.
 
-If you are using the Uno itself, you can comment out every line that contains
-the variable: `$ADDITIONAL_CORE`, then set the `$ADDITIONAL_FQBN` variable to
-the value: `arduino:avr:uno`.
+The container's user account that is created in the build process will have
+access to the `dialout` group, which allows the account to upload sketches to a
+board. The default port for SparkFun RedBoards is `/dev/ttyUSB0`, and the Uno's
+default port is `/dev/ttyACM0`. If you use a different port, this will need
+updated on the last line of the Dockerfile, and the `start-redboard.sh` or
+`start-arduino.sh` bash scripts.
 
-The user account that is connected to will have access to the `dialout` group,
-which allows the account to upload sketches to a board. The default port for
-SparkFun RedBoards is `/dev/ttyUSB0`. If you use a different port, this will
-need updated on the last line of the Dockerfile, and the `start-arduino.sh`
-bash script.
-
-The Dockerfile will need three additional variables set before running:
-- ADDITIONAL_CORE: the core of a compatible board, ex: SparkFun:avr
-- ADDITIONAL_FQBN: the full name of the board, ex: SparkFun:avr:RedBoard
+If using a different board, the Dockerfile will need three additional variables
+set before running:
+- ADDITIONAL_CORE: the core of a compatible board, ex: `SparkFun:avr`
+- ADDITIONAL_FQBN: the full name of the board, ex: `SparkFun:avr:RedBoard`
 - ADDITIONAL_URL: the web address needed for arduino-cli to import cores
 
 The SparkFun additional url is listed on their [webpage here](https://learn.sparkfun.com/tutorials/installing-arduino-ide/board-add-ons-with-arduino-board-manager).
@@ -182,6 +188,41 @@ For more information about Temurin, [click here](https://adoptium.net/docs/faq/)
 
 The variable `OPENJDK_LTS` will need periodic updates as newer LTS versions
 of OpenJDK are released.
+
+The variable `FEDORA_VERSION` will need periodic updates as Fedora releases
+new versions every six months. Adoptium usually has the latest version of
+Fedora updated in their repos about two to three weeks after the latest
+version of Fedora is released.
+
+<br>
+---
+### Kotlin
+Kotlin is a programming language to make Java development faster and easier.
+This is made by the group: [JetBrains](https://www.jetbrains.com/)
+
+This installation starts with the Java Dockerfile, and adds the Kotlin compiler
+on top of Temurin OpenJDK for full ineropterability, access to Java class
+libraries, and if you want to develop for the JVM.
+
+Kotlin Native, JS, and WASM are not included in this build.
+
+To compile and run kotlin files, let's say `main.kt`, run the commands:
+```bash
+kotlinc ./main.kt
+kotlin ./MainKt
+```
+
+The first line, `kotlinc ./main.kt` will compile the Kotlin file into a class
+file that Kotlin can run. Careful, do not try to run the original `.kt` file
+after compiling has finished. The compiler will create a class file that
+has the first letter capitalized, even if your `.kt` file is not. Run the
+`kotlin` command on the class file to run the program.
+
+The variable `OPENJDK_LTS` will need periodic updates as newer LTS versions
+of OpenJDK are released.
+
+The variable `KOTLIN_VERSION` will need periodic updates as newer versions
+of Kotlin are released.
 
 The variable `FEDORA_VERSION` will need periodic updates as Fedora releases
 new versions every six months. Adoptium usually has the latest version of

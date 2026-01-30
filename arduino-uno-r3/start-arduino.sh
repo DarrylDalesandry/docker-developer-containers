@@ -1,20 +1,25 @@
 #!/bin/bash
 
+# User editable variables
+BUILDPATH="./"
+
+# Constants, do not change
 IDENTITY="dd-arduino"
 USERNAME="dd-container"
 
-CONTAINER=$(docker ps -alqf "name=$IDENTITY")
+CONTAINER=$(docker images --filter "label=identity=$IDENTITY" -q)
 
-if [[ -z $CONTAINER ]]; then
+if [[ -z "$CONTAINER" ]]; then
+    echo "No Docker image found..."
+    sleep 1
+    echo -e "\nBuilding image..."
+    docker build -t "dd-docker:$IDENTITY" $BUILDPATH
+
     CONTAINER=$(docker images --filter "label=identity=$IDENTITY" -q)
-    docker run -it \
-        --name="dd-arduino" \
-        --device=/dev/ttyACM0 \
-        -v ~/.ssh:/home/$USERNAME/.ssh:ro \
-        -v ~/.config/nvim:/home/$USERNAME/.config/nvim \
-        -v /home/dd-user/Projects/:/home/$USERNAME/Projects \
-        $CONTAINER
-
-else
-    docker start -ai $CONTAINER
 fi
+
+docker run -it \
+    --rm \
+    --device=/dev/ttyACM0 \
+    -v ~/.ssh:/home/$USERNAME/.ssh:ro \
+    $CONTAINER

@@ -4,7 +4,7 @@
 BUILDPATH="./"
 
 # Constants, do not change
-IDENTITY="dd-python"
+IDENTITY="dd-redboard"
 USERNAME="dd-container"
 
 CONTAINER=$(docker images --filter "label=identity=$IDENTITY" -q)
@@ -18,4 +18,8 @@ if [[ -z "$CONTAINER" ]]; then
     CONTAINER=$(docker images --filter "label=identity=$IDENTITY" -q)
 fi
 
-docker run -it --rm -v ~/.ssh:/home/$USERNAME/.ssh:ro $CONTAINER
+docker run -it \
+    --rm \
+    --device=/dev/ttyUSB0 \
+    -v ~/.ssh:/home/$USERNAME/.ssh:ro \
+    $CONTAINER

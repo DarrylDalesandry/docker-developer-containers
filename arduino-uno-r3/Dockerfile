@@ -3,6 +3,7 @@ FROM fedora:latest
 # User editable variabled
 ENV GITHUB_EMAIL=""
 ENV GITHUB_USERNAME=""
+ENV DOTFILE_REPO=""
 
 ENV BOARD_FQBN="arduino:avr:uno"
 ENV BOARD_CORE="arduino:avr"
@@ -13,7 +14,7 @@ ENV NEOVIM_FILE="nvim-linux-x86_64"
 # Constants, do not change
 ENV USERNAME="dd-container"
 ENV ARDUINO_DOWNLOAD="https://raw.githubusercontent.com/arduino/arduino-cli/master/install.sh"
-LABEL identity="dd-arduino"
+LABEL identity="dd-redboard"
 
 # Install base system dependencies
 RUN dnf upgrade -y && dnf install -y \
@@ -41,6 +42,7 @@ RUN mkdir -p /home/$USERNAME/ && \
     mkdir -m 700 /home/$USERNAME/.ssh
 
 RUN mkdir -p /home/$USERNAME/.config/
+ADD https://github.com/$GITHUB_USERNAME/$DOTFILE_REPO.git /home/$USERNAME/.config/
 
 
 # Adding arduino-cli
