@@ -26,6 +26,7 @@ own Dockerfiles.
 ## The languages available are:
 - Arduino (for both the SparkFun Redboard and Arduino Uno)
 - C
+- C# (with dotnet)
 - Go
 - Java
 - Kotlin
@@ -175,6 +176,23 @@ compiler is installed from the DNF package manager.
 <br>
 
 ---
+### C\#
+C# is included with the dotnet SDK installed from the dnf package manager.
+
+Dotnet requires a project to be installed before the tools are available to
+use to write and compile. A Project file is created using the default program
+name, `Progam.cs`.
+
+After writing C# code into `Program.cs`, then run the command:
+```bash
+dotnet run ./Program.cs
+```
+
+This will start the dotnet runtime environment included with the dotnet sdk.
+
+<br>
+
+---
 ### Go
 Go is installed through downloading a tar archive, extracting the contents, and
 adding it's `bin` folder to the `$PATH` variable.
@@ -201,6 +219,7 @@ Fedora updated in their repos about two to three weeks after the latest
 version of Fedora is released.
 
 <br>
+
 ---
 ### Kotlin
 Kotlin is a programming language to make Java development faster and easier.

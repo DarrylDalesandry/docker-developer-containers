@@ -8,12 +8,17 @@ ENV DOTFILE_REPO=""
 ENV NEOVIM_TAR_DOWNLOAD="https://github.com/neovim/neovim/releases/latest/download/nvim-linux-x86_64.tar.gz"
 ENV NEOVIM_FILE="nvim-linux-x86_64"
 
-# Versions of all languages not in DNF
+# Versions of all languages for dnf
+ENV DOTNET_VERSION="10.0"
+
 ENV GO_VERSION="1.25.5"
 ENV GO_TAR_FILE="go$GO_VERSION.linux-amd64.tar.gz"
 
 ENV OPENJDK_LTS="25"
 ENV FEDORA_VERSION="43"
+
+ENV KOTLIN_VERSION="2.3.0"
+ENV KOTLIN_ZIP="https://github.com/JetBrains/kotlin/releases/download/v$KOTLIN_VERSION/kotlin-compiler-$KOTLIN_VERSION.zip"
 
 ENV LUA_VERSION="5.4.8"
 
@@ -29,7 +34,7 @@ LABEL identity="dd-all"
 
 
 # Install base system dependencies
-#  also installs minimum requirements for C and Python
+#  also installs minimum requirements for C, C#, and Python
 RUN dnf upgrade -y && dnf install -y \
   git \
   nano \
@@ -41,6 +46,7 @@ RUN dnf upgrade -y && dnf install -y \
   python3 \
   python3-pip \
   awk \
+  dotnet-sdk-$DOTNET_VERSION \
   && dnf autoremove -y
 
 # Installing "source" to allow venv setup
@@ -66,8 +72,10 @@ ADD https://github.com/$GITHUB_USERNAME/$DOTFILE_REPO.git /home/$USERNAME/.confi
 # Creating all runtime folders
 RUN mkdir /home/$USERNAME/$LANGUAGE && \
     mkdir /home/$USERNAME/$LANGUAGE/c && \
+    mkdir /home/$USERNAME/$LANGUAGE/c-sharp && \
     mkdir /home/$USERNAME/$LANGUAGE/go && \
     mkdir /home/$USERNAME/$LANGUAGE/java && \
+    mkdir /home/$USERNAME/$LANGUAGE/kotlin && \
     mkdir /home/$USERNAME/$LANGUAGE/lua && \
     mkdir /home/$USERNAME/$LANGUAGE/python && \
     mkdir /home/$USERNAME/$LANGUAGE/rust && \
@@ -94,6 +102,15 @@ RUN echo "[ADOPTIUM]" >> /etc/yum.repos.d/adoptium.repo && \
 
 RUN dnf update && dnf install temurin-$OPENJDK_LTS-jdk -y
 
+# Kotlin installation
+ADD $KOTLIN_ZIP /opt
+RUN unzip /opt/kotlin-compiler-$KOTLIN_VERSION.zip -d /opt/
+RUN rm -r /opt/kotlin-compiler-$KOTLIN_VERSION.zip
+RUN mv /opt/kotlinc/bin/* /usr/bin/
+RUN mv /opt/kotlinc/lib/* /usr/lib/
+RUN rm -r /opt/kotlinc
+
+
 # Installing Lua compiler and interpreter, from source
 ADD "https://www.lua.org/ftp/lua-$LUA_VERSION.tar.gz" /opt/
 RUN tar -xf /opt/lua-$LUA_VERSION.tar.gz -C /opt/
@@ -111,6 +128,10 @@ RUN chown -R $USERNAME:$USERNAME /home/$USERNAME/
 
 # Changing user, installing remaining environments
 USER $USERNAME
+
+# C# setup
+WORKDIR /home/$USERNAME/$LANGUAGE/c-sharp
+RUN dotnet new console -n Project
 
 # Rust initializing
 RUN cat /home/$USERNAME/sh.rustup.rs | sh -s -- -y && \
